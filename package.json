@@ -1,0 +1,9 @@
+{
+  "name": "husevn-downloader",
+  "version": "1.0.0",
+  "description": "Premium media downloader for Netlify",
+  "dependencies": {
+    "ytdl-core": "^4.11.5",
+    "node-fetch": "^3.3.2"
+  }
+}
