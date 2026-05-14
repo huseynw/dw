@@ -1,0 +1,403 @@
+<!DOCTYPE html>
+<html lang="az">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>HUSEVN DOWNLOADER – Premium</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+  <style>
+    :root {
+      --bg: #0a0a0f; --surface: #12121a; --surface2: #1a1a28; --surface3: #222236;
+      --primary: #7c5cfc; --primary-glow: #7c5cfc55; --accent: #06d6a0;
+      --accent2: #ff6b9d; --accent3: #ffb347; --accent4: #4ec9f0; --accent5: #e74c8b;
+      --text: #e8e8f0; --text2: #b0b0c0; --text3: #7878a0; --border: #2a2a40;
+      --radius: 20px; --radius-sm: 12px; --radius-xs: 8px;
+      --shadow-lg: 0 25px 60px rgba(0,0,0,0.5);
+      --shadow-glow: 0 0 80px rgba(124,92,252,0.25);
+      --transition: 0.35s cubic-bezier(0.4,0,0.2,1);
+    }
+    * { margin:0; padding:0; box-sizing:border-box; }
+    body {
+      font-family: 'Segoe UI','SF Pro Display',system-ui,sans-serif;
+      background: var(--bg); color: var(--text); min-height:100vh; overflow-x:hidden;
+      -webkit-font-smoothing:antialiased; letter-spacing: -0.01em;
+    }
+    .bg-orbs { position:fixed; inset:0; pointer-events:none; z-index:0; overflow:hidden; }
+    .bg-orbs .orb { position:absolute; border-radius:50%; filter:blur(120px); opacity:0.22; animation:floatOrb 18s infinite ease-in-out; }
+    .bg-orbs .orb:nth-child(1){ width:500px; height:500px; background:var(--primary); top:-10%; left:-8%; animation-delay:0s; animation-duration:20s; }
+    .bg-orbs .orb:nth-child(2){ width:400px; height:400px; background:var(--accent2); top:55%; right:-10%; animation-delay:-6s; animation-duration:22s; }
+    .bg-orbs .orb:nth-child(3){ width:350px; height:350px; background:var(--accent); bottom:-12%; left:25%; animation-delay:-11s; animation-duration:19s; }
+    .bg-orbs .orb:nth-child(4){ width:300px; height:300px; background:var(--accent4); top:30%; left:55%; animation-delay:-4s; animation-duration:24s; }
+    .bg-orbs .orb:nth-child(5){ width:280px; height:280px; background:var(--accent3); top:70%; left:5%; animation-delay:-8s; animation-duration:21s; }
+    @keyframes floatOrb {
+      0%,100%{ transform:translate(0,0) scale(1); }
+      25%{ transform:translate(60px,-80px) scale(1.15); }
+      50%{ transform:translate(-30px,-40px) scale(0.9); }
+      75%{ transform:translate(-50px,50px) scale(1.1); }
+    }
+    .app-container { position:relative; z-index:1; max-width:850px; margin:0 auto; padding:20px 20px 50px; }
+    .header { text-align:center; padding:40px 20px 30px; position:relative; }
+    .header .logo-icon {
+      display:inline-block; width:70px; height:70px; background:linear-gradient(135deg,var(--primary),#5b3df5);
+      border-radius:22px; font-size:32px; line-height:70px; color:#fff; margin-bottom:18px;
+      box-shadow:0 15px 40px var(--primary-glow); animation:logoPulse 3s infinite ease-in-out;
+    }
+    @keyframes logoPulse { 0%,100%{ box-shadow:0 15px 40px var(--primary-glow); } 50%{ box-shadow:0 20px 55px rgba(124,92,252,0.45); } }
+    .header h1 { font-size:2.4em; font-weight:800; background:linear-gradient(135deg,#fff 0%,#c5b8ff 50%,#fff 100%); -webkit-background-clip:text; -webkit-text-fill-color:transparent; background-clip:text; letter-spacing:-0.02em; margin-bottom:6px; }
+    .header .subtitle { font-size:0.95em; color:var(--text3); font-weight:500; letter-spacing:0.04em; text-transform:uppercase; }
+    .platform-tabs { display:flex; flex-wrap:wrap; gap:10px; justify-content:center; margin-bottom:28px; }
+    .platform-tab {
+      padding:12px 20px; border-radius:50px; cursor:pointer; font-weight:600; font-size:0.9em;
+      border:2px solid var(--border); background:var(--surface2); color:var(--text2);
+      transition:var(--transition); display:flex; align-items:center; gap:8px; white-space:nowrap;
+    }
+    .platform-tab:hover { border-color:var(--primary); color:#fff; background:var(--surface3); transform:translateY(-2px); box-shadow:0 8px 25px rgba(0,0,0,0.3); }
+    .platform-tab.active { background:var(--primary); border-color:var(--primary); color:#fff; box-shadow:0 8px 30px var(--primary-glow); transform:translateY(-2px); }
+    .platform-tab.yt-tab.active { background:#ff4444; border-color:#ff4444; box-shadow:0 8px 30px rgba(255,68,68,0.4); }
+    .platform-tab.tt-tab.active { background:#ff0050; border-color:#ff0050; box-shadow:0 8px 30px rgba(255,0,80,0.4); }
+    .platform-tab.ig-tab.active { background:linear-gradient(135deg,#f09433,#e6683c,#dc2743,#cc2366,#bc1888); border-color:#dc2743; box-shadow:0 8px 30px rgba(220,39,67,0.4); }
+    .platform-tab.pin-tab.active { background:#e60023; border-color:#e60023; box-shadow:0 8px 30px rgba(230,0,35,0.4); }
+    .platform-tab.fb-tab.active { background:#1877f2; border-color:#1877f2; box-shadow:0 8px 30px rgba(24,119,242,0.4); }
+    .main-card {
+      background:var(--surface); border:1px solid var(--border); border-radius:var(--radius);
+      padding:32px 28px; box-shadow:var(--shadow-lg),var(--shadow-glow);
+      backdrop-filter:blur(10px); transition:var(--transition); position:relative; overflow:hidden;
+    }
+    .main-card::before { content:''; position:absolute; top:0; left:0; right:0; height:2px; background:linear-gradient(90deg,transparent,var(--primary),var(--accent),var(--accent2),transparent); opacity:0.6; }
+    .section-title { font-size:1.3em; font-weight:700; margin-bottom:20px; display:flex; align-items:center; gap:10px; }
+    .input-group { display:flex; gap:12px; margin-bottom:20px; flex-wrap:wrap; }
+    .input-group input { flex:1; min-width:250px; padding:15px 20px; border-radius:var(--radius-sm); border:2px solid var(--border); background:var(--surface2); color:var(--text); font-size:0.95em; transition:var(--transition); outline:none; }
+    .input-group input:focus { border-color:var(--primary); box-shadow:0 0 0 8px rgba(124,92,252,0.08); background:var(--surface3); }
+    .btn { padding:14px 28px; border-radius:var(--radius-sm); border:none; cursor:pointer; font-weight:700; font-size:0.9em; transition:var(--transition); display:flex; align-items:center; gap:8px; white-space:nowrap; }
+    .btn-primary { background:var(--primary); color:#fff; box-shadow:0 6px 25px var(--primary-glow); }
+    .btn-primary:hover { transform:translateY(-3px); box-shadow:0 12px 35px rgba(124,92,252,0.5); background:#8b6fff; }
+    .btn-outline { background:transparent; border:2px solid var(--border); color:var(--text); }
+    .btn-outline:hover { border-color:var(--primary); background:rgba(124,92,252,0.08); color:#fff; }
+    .btn-sm { padding:10px 18px; font-size:0.8em; border-radius:var(--radius-xs); }
+    .btn-download { background:var(--accent); color:#000; font-weight:700; box-shadow:0 6px 20px rgba(6,214,160,0.3); }
+    .btn-download:hover { background:#0be8b0; transform:translateY(-2px); box-shadow:0 10px 30px rgba(6,214,160,0.45); }
+    .btn-mp3 { background:var(--accent3); color:#000; font-weight:700; box-shadow:0 6px 20px rgba(255,179,71,0.3); }
+    .btn-mp3:hover { background:#ffc06e; transform:translateY(-2px); box-shadow:0 10px 30px rgba(255,179,71,0.45); }
+    .results-area { margin-top:24px; animation:fadeInUp 0.5s ease; }
+    @keyframes fadeInUp { from{ opacity:0; transform:translateY(25px); } to{ opacity:1; transform:translateY(0); } }
+    .preview-card { background:var(--surface2); border-radius:var(--radius-sm); padding:20px; border:1px solid var(--border); margin-bottom:16px; transition:var(--transition); }
+    .preview-thumb { width:100%; max-height:280px; object-fit:cover; border-radius:var(--radius-xs); margin-bottom:14px; background:var(--surface3); }
+    .preview-info { display:flex; flex-wrap:wrap; gap:12px; align-items:center; }
+    .preview-info h3 { font-size:1em; font-weight:600; flex:1; min-width:200px; word-break:break-word; }
+    .quality-selector { display:flex; flex-wrap:wrap; gap:8px; margin:14px 0; }
+    .quality-chip { padding:8px 16px; border-radius:50px; border:2px solid var(--border); background:var(--surface3); cursor:pointer; font-size:0.82em; font-weight:600; color:var(--text2); transition:var(--transition); user-select:none; }
+    .quality-chip:hover { border-color:var(--primary); color:#fff; }
+    .quality-chip.selected { background:var(--primary); border-color:var(--primary); color:#fff; box-shadow:0 4px 15px var(--primary-glow); }
+    .quality-chip.best { border-color:var(--accent); color:var(--accent); }
+    .quality-chip.best.selected { background:var(--accent); border-color:var(--accent); color:#000; box-shadow:0 4px 15px rgba(6,214,160,0.35); }
+    .image-grid { display:grid; grid-template-columns:repeat(auto-fill,minmax(140px,1fr)); gap:12px; margin:14px 0; }
+    .image-grid-item { position:relative; border-radius:var(--radius-xs); overflow:hidden; cursor:pointer; border:3px solid transparent; transition:var(--transition); aspect-ratio:1; background:var(--surface3); }
+    .image-grid-item img { width:100%; height:100%; object-fit:cover; }
+    .image-grid-item:hover { border-color:#555; transform:scale(1.03); }
+    .image-grid-item.selected { border-color:var(--accent); box-shadow:0 0 25px rgba(6,214,160,0.35); }
+    .image-grid-item .check-mark { position:absolute; top:8px; right:8px; width:28px; height:28px; border-radius:50%; background:var(--accent); color:#000; display:flex; align-items:center; justify-content:center; font-size:14px; font-weight:700; opacity:0; transform:scale(0.5); transition:var(--transition); pointer-events:none; }
+    .image-grid-item.selected .check-mark { opacity:1; transform:scale(1); }
+    .loader { display:inline-block; width:40px; height:40px; border:3px solid var(--border); border-top-color:var(--primary); border-radius:50%; animation:spin 0.8s linear infinite; }
+    @keyframes spin { to{ transform:rotate(360deg); } }
+    .loading-container { text-align:center; padding:40px; color:var(--text2); }
+    .toast-container { position:fixed; bottom:30px; right:30px; z-index:9999; display:flex; flex-direction:column; gap:10px; }
+    .toast { padding:14px 22px; border-radius:var(--radius-xs); background:var(--surface2); border:1px solid var(--border); color:var(--text); font-weight:600; font-size:0.85em; box-shadow:var(--shadow-lg); animation:slideIn 0.4s ease, fadeOut 0.4s ease 2.6s forwards; display:flex; align-items:center; gap:10px; max-width:400px; }
+    .toast.success { border-color:var(--accent); background:#0d2b22; color:#b8ffe8; }
+    .toast.error { border-color:#ff4444; background:#2b0d0d; color:#ffb8b8; }
+    @keyframes slideIn { from{ transform:translateX(120%); opacity:0; } to{ transform:translateX(0); opacity:1; } }
+    @keyframes fadeOut { from{ opacity:1; } to{ opacity:0; transform:translateY(-15px); } }
+    .audio-toggle { display:flex; align-items:center; gap:10px; margin:10px 0; font-weight:600; font-size:0.9em; color:var(--text2); }
+    .toggle-switch { position:relative; width:50px; height:28px; background:var(--surface3); border-radius:50px; cursor:pointer; border:2px solid var(--border); transition:var(--transition); }
+    .toggle-switch.active { background:var(--accent); border-color:var(--accent); }
+    .toggle-switch::after { content:''; position:absolute; top:3px; left:3px; width:18px; height:18px; border-radius:50%; background:#fff; transition:var(--transition); }
+    .toggle-switch.active::after { left:25px; }
+    @media (max-width:600px) {
+      .header h1 { font-size:1.6em; }
+      .platform-tab { padding:10px 14px; font-size:0.78em; }
+      .main-card { padding:20px 14px; }
+      .image-grid { grid-template-columns:repeat(auto-fill,minmax(100px,1fr)); }
+    }
+  </style>
+</head>
+<body>
+  <div class="bg-orbs">
+    <div class="orb"></div><div class="orb"></div><div class="orb"></div><div class="orb"></div><div class="orb"></div>
+  </div>
+  <div class="app-container">
+    <header class="header">
+      <div class="logo-icon"><i class="fa-solid fa-cloud-arrow-down"></i></div>
+      <h1>HUSEVN DOWNLOADER</h1>
+      <p class="subtitle">Premium Media Download Platform</p>
+    </header>
+    <div class="platform-tabs" id="platformTabs">
+      <button class="platform-tab yt-tab active" data-platform="youtube"><i class="fa-brands fa-youtube"></i> YouTube</button>
+      <button class="platform-tab tt-tab" data-platform="tiktok"><i class="fa-brands fa-tiktok"></i> TikTok</button>
+      <button class="platform-tab ig-tab" data-platform="instagram"><i class="fa-brands fa-instagram"></i> Instagram</button>
+      <button class="platform-tab pin-tab" data-platform="pinterest"><i class="fa-brands fa-pinterest"></i> Pinterest</button>
+      <button class="platform-tab fb-tab" data-platform="facebook"><i class="fa-brands fa-facebook"></i> Facebook</button>
+    </div>
+    <div class="main-card" id="mainCard">
+      <div id="dynamicContent"></div>
+    </div>
+  </div>
+  <div class="toast-container" id="toastContainer"></div>
+  <script>
+    const API_BASE = '/.netlify/functions';
+    let currentPlatform = 'youtube';
+    let selectedQuality = null;
+    let selectedImages = new Set();
+    let withAudio = true;
+    let currentVideoData = null;
+
+    document.getElementById('platformTabs').addEventListener('click', function(e) {
+      const tab = e.target.closest('.platform-tab');
+      if(!tab) return;
+      const platform = tab.dataset.platform;
+      document.querySelectorAll('.platform-tab').forEach(t => t.classList.remove('active'));
+      tab.classList.add('active');
+      currentPlatform = platform;
+      selectedQuality = null; selectedImages.clear(); withAudio = true; currentVideoData = null;
+      renderSection(platform);
+    });
+
+    function renderSection(platform) {
+      const container = document.getElementById('dynamicContent');
+      const sections = {
+        youtube: `
+          <div class="platform-section"><div class="section-title"><i class="fa-brands fa-youtube" style="color:#ff4444;"></i> YouTube Downloader</div>
+          <div class="input-group"><input type="text" id="yt-url" placeholder="YouTube linkini yapışdırın..."><button class="btn btn-primary" onclick="fetchYouTube()"><i class="fa-solid fa-magnifying-glass"></i> Analiz Et</button></div>
+          <div id="yt-results"></div></div>`,
+        tiktok: `
+          <div class="platform-section"><div class="section-title"><i class="fa-brands fa-tiktok" style="color:#ff0050;"></i> TikTok Downloader</div>
+          <div class="input-group"><input type="text" id="tt-url" placeholder="TikTok linkini yapışdırın..."><button class="btn btn-primary" onclick="fetchTikTok()"><i class="fa-solid fa-magnifying-glass"></i> Analiz Et</button></div>
+          <div id="tt-results"></div></div>`,
+        instagram: `
+          <div class="platform-section"><div class="section-title"><i class="fa-brands fa-instagram" style="color:#e4405f;"></i> Instagram Downloader</div>
+          <div class="input-group"><input type="text" id="ig-url" placeholder="Instagram linkini yapışdırın..."><button class="btn btn-primary" onclick="fetchInstagram()"><i class="fa-solid fa-magnifying-glass"></i> Analiz Et</button></div>
+          <div id="ig-results"></div></div>`,
+        pinterest: `
+          <div class="platform-section"><div class="section-title"><i class="fa-brands fa-pinterest" style="color:#e60023;"></i> Pinterest Downloader</div>
+          <div class="input-group"><input type="text" id="pin-url" placeholder="Pinterest linkini yapışdırın..."><button class="btn btn-primary" onclick="fetchPinterest()"><i class="fa-solid fa-magnifying-glass"></i> Analiz Et</button></div>
+          <div id="pin-results"></div></div>`,
+        facebook: `
+          <div class="platform-section"><div class="section-title"><i class="fa-brands fa-facebook" style="color:#1877f2;"></i> Facebook Downloader</div>
+          <div class="input-group"><input type="text" id="fb-url" placeholder="Facebook linkini yapışdırın..."><button class="btn btn-primary" onclick="fetchFacebook()"><i class="fa-solid fa-magnifying-glass"></i> Analiz Et</button></div>
+          <div id="fb-results"></div></div>`
+      };
+      container.innerHTML = sections[platform] || sections.youtube;
+      container.style.animation = 'none'; container.offsetHeight; container.style.animation = 'fadeInUp 0.4s ease';
+    }
+
+    function showToast(msg, type='success') {
+      const cont = document.getElementById('toastContainer');
+      const toast = document.createElement('div');
+      toast.className = `toast ${type}`;
+      toast.innerHTML = `<i class="fa-solid fa-${type==='error'?'circle-xmark':'circle-check'}"></i> ${msg}`;
+      cont.appendChild(toast);
+      setTimeout(() => toast.remove(), 3200);
+    }
+
+    async function downloadFile(url, filename) {
+      try { const a=document.createElement('a'); a.href=url; a.download=filename; a.target='_blank'; document.body.appendChild(a); a.click(); document.body.removeChild(a); showToast('✅ Yükləmə tamamlandı!','success'); }
+      catch(e){ showToast('Yükləmə uğursuz!','error'); }
+    }
+
+    // ---------- YouTube ----------
+    async function fetchYouTube() {
+      const url = document.getElementById('yt-url')?.value.trim();
+      if(!url) { showToast('Link daxil edin!','error'); return; }
+      const resDiv = document.getElementById('yt-results');
+      resDiv.innerHTML = '<div class="loading-container"><div class="loader"></div><p>Video analiz edilir...</p></div>';
+      try {
+        const videoId = extractYouTubeID(url);
+        if(!videoId) throw new Error('Yanlış YouTube linki');
+        const resp = await fetch(`${API_BASE}/youtube?videoId=${videoId}`);
+        const data = await resp.json();
+        if(data.error) throw new Error(data.error);
+        currentVideoData = data;
+        selectedQuality = data.formats?.find(f=>f.hasAudio&&f.qualityLabel)?.itag || data.formats?.[0]?.itag || null;
+        withAudio = true;
+        renderYouTubeResults(data);
+      } catch(err) {
+        resDiv.innerHTML = `<p style="color:#ff6b6b;text-align:center;">${err.message}</p>`;
+        showToast(err.message,'error');
+      }
+    }
+    function extractYouTubeID(url) {
+      const patterns = [/(?:youtube\.com\/watch\?v=)([a-zA-Z0-9_-]{11})/,/(?:youtu\.be\/)([a-zA-Z0-9_-]{11})/,/(?:youtube\.com\/embed\/)([a-zA-Z0-9_-]{11})/,/(?:youtube\.com\/shorts\/)([a-zA-Z0-9_-]{11})/,/^([a-zA-Z0-9_-]{11})$/];
+      for(let p of patterns) { const m=url.match(p); if(m) return m[1]; }
+      return null;
+    }
+    function renderYouTubeResults(data) {
+      const resDiv = document.getElementById('yt-results');
+      const formats = data.formats || [];
+      const videoFormats = formats.filter(f=>f.hasVideo&&f.qualityLabel);
+      const audioFormats = formats.filter(f=>!f.hasVideo&&f.hasAudio);
+      const bestAudio = audioFormats.sort((a,b)=>(b.bitrate||0)-(a.bitrate||0))[0];
+      const qualityOrder = ['144p','240p','360p','480p','720p','1080p','1440p','2160p','4320p'];
+      videoFormats.sort((a,b)=>qualityOrder.indexOf(a.qualityLabel)-qualityOrder.indexOf(b.qualityLabel));
+      const maxQuality = videoFormats[videoFormats.length-1]?.qualityLabel || '720p';
+      const maxIdx = qualityOrder.indexOf(maxQuality);
+      let html = `<div class="preview-card"><img class="preview-thumb" src="${data.thumbnail||''}" onerror="this.style.display='none'"><div class="preview-info"><h3>${data.title||'Video'}</h3><span style="color:var(--text3)">${data.duration||''}</span></div>`;
+      if(videoFormats.length>0){
+        html += `<p style="font-weight:700;margin-top:14px;color:var(--text2)"><i class="fa-solid fa-film"></i> Video keyfiyyəti:</p><div class="quality-selector" id="yt-quality-selector">`;
+        qualityOrder.slice(0,maxIdx+1).forEach(q=>{
+          const exists = videoFormats.find(f=>f.qualityLabel===q);
+          if(exists){
+            const isBest = q===maxQuality;
+            html += `<span class="quality-chip ${isBest?'best':''} ${selectedQuality===exists.itag?'selected':''}" data-itag="${exists.itag}" onclick="selectYTQuality('${exists.itag}',this)">${q} ${isBest?'⭐':''}</span>`;
+          }
+        });
+        html += `</div><div class="audio-toggle"><span><i class="fa-solid fa-volume-high"></i> Səsli:</span><div class="toggle-switch active" id="yt-audio-toggle" onclick="toggleYTAudio()"></div><span id="yt-audio-label">Bəli</span></div>
+        <button class="btn btn-download" style="margin-top:12px" onclick="downloadYTVideo()"><i class="fa-solid fa-download"></i> Video Yüklə (${maxQuality})</button>`;
+      }
+      if(bestAudio || audioFormats.length>0 || videoFormats.length>0){
+        html += `<div style="margin-top:18px;padding-top:16px;border-top:1px solid var(--border)"><p style="font-weight:700;color:var(--text2)"><i class="fa-solid fa-music"></i> MP3 Yüklə (Yüksək keyfiyyət):</p><button class="btn btn-mp3" onclick="downloadYTMP3('${data.thumbnail||''}','${(data.title||'audio').replace(/'/g,"\\'")}')"><i class="fa-solid fa-file-audio"></i> MP3 Yüklə + Thumbnail</button></div>`;
+      }
+      html += `</div>`; resDiv.innerHTML = html;
+    }
+    function selectYTQuality(itag,el){
+      selectedQuality=itag;
+      document.querySelectorAll('#yt-quality-selector .quality-chip').forEach(c=>c.classList.remove('selected'));
+      el.classList.add('selected');
+      updateYTButton();
+    }
+    function toggleYTAudio(){
+      withAudio=!withAudio;
+      document.getElementById('yt-audio-toggle').classList.toggle('active',withAudio);
+      document.getElementById('yt-audio-label').textContent=withAudio?'Bəli':'Xeyr';
+      updateYTButton();
+    }
+    function updateYTButton(){
+      const btn = document.querySelector('#yt-results .btn-download');
+      if(!btn||!currentVideoData) return;
+      const fmt = currentVideoData.formats.find(f=>f.itag==selectedQuality);
+      btn.innerHTML = `<i class="fa-solid fa-download"></i> Video Yüklə (${fmt?.qualityLabel||'?'} - ${withAudio?'Səsli':'Səssiz'})`;
+    }
+    async function downloadYTVideo(){
+      if(!currentVideoData||!selectedQuality){showToast('Keyfiyyət seçin!','error');return;}
+      const fmt = currentVideoData.formats.find(f=>f.itag==selectedQuality);
+      if(!fmt){showToast('Format tapılmadı!','error');return;}
+      if(withAudio && !fmt.hasAudio){showToast('Bu keyfiyyətdə səs yoxdur. 720p seçin.','error'); return;}
+      await downloadFile(fmt.url, `${currentVideoData.title||'video'}_${fmt.qualityLabel}.mp4`);
+    }
+    async function downloadYTMP3(thumb,title){
+      if(!currentVideoData) return;
+      const audioFormat = currentVideoData.formats.filter(f=>!f.hasVideo&&f.hasAudio).sort((a,b)=>(b.bitrate||0)-(a.bitrate||0))[0] || currentVideoData.formats.find(f=>f.hasAudio);
+      if(!audioFormat){showToast('Audio tapılmadı!','error');return;}
+      await downloadFile(audioFormat.url, `${title}.mp3`);
+      if(thumb) setTimeout(()=>downloadFile(thumb,`${title}_thumbnail.jpg`),800);
+    }
+
+    // ---------- TikTok ----------
+    async function fetchTikTok(){
+      const url = document.getElementById('tt-url')?.value.trim();
+      if(!url){showToast('Link daxil edin!','error');return;}
+      const resDiv = document.getElementById('tt-results');
+      resDiv.innerHTML = '<div class="loading-container"><div class="loader"></div><p>TikTok analiz edilir...</p></div>';
+      try{
+        const resp = await fetch(`${API_BASE}/tiktok?url=${encodeURIComponent(url)}`);
+        const data = await resp.json();
+        if(data.error) throw new Error(data.error);
+        currentVideoData=data; selectedImages.clear(); renderTikTokResults(data);
+      }catch(err){ resDiv.innerHTML=`<p style="color:#ff6b6b">${err.message}</p>`; showToast(err.message,'error'); }
+    }
+    function renderTikTokResults(data){
+      const resDiv = document.getElementById('tt-results');
+      let html = `<div class="preview-card">`;
+      if(data.thumbnail) html += `<img class="preview-thumb" src="${data.thumbnail}">`;
+      html += `<div class="preview-info"><h3>${data.title||'TikTok Media'}</h3></div>`;
+      if(data.images && data.images.length>1){
+        html += `<p style="font-weight:700;color:var(--accent2)"><i class="fa-solid fa-images"></i> Slayd (${data.images.length} şəkil) – seçin:</p><div class="image-grid" id="tt-image-grid">`;
+        data.images.forEach((img,idx)=>{ html += `<div class="image-grid-item" data-index="${idx}" onclick="toggleTTImage(${idx},this)"><img src="${img}"><span class="check-mark"><i class="fa-solid fa-check"></i></span></div>`; });
+        html += `</div><button class="btn btn-download btn-sm" onclick="downloadTTSelected()">Seçilmiş şəkilləri yüklə</button><button class="btn btn-outline btn-sm" style="margin-left:8px" onclick="selectAllTT()">Hamısını seç</button>`;
+      }
+      if(data.videoUrl) html += `<div style="margin-top:14px;padding-top:14px;border-top:1px solid var(--border)"><p style="font-weight:700"><i class="fa-solid fa-video"></i> Video:</p><button class="btn btn-download btn-sm" onclick="downloadFile('${data.videoUrl}','tiktok_video.mp4')">Video Yüklə</button></div>`;
+      if(data.audioUrl || data.videoUrl) html += `<div style="margin-top:10px"><p style="font-weight:700"><i class="fa-solid fa-music"></i> MP3:</p><button class="btn btn-mp3 btn-sm" onclick="downloadFile('${data.audioUrl||data.videoUrl}','tiktok_audio.mp3')">MP3 Yüklə</button></div>`;
+      html += `</div>`; resDiv.innerHTML = html;
+    }
+    function toggleTTImage(idx,el){ if(selectedImages.has(idx)){selectedImages.delete(idx);el.classList.remove('selected');} else {selectedImages.add(idx);el.classList.add('selected');} }
+    function selectAllTT(){ const grid=document.getElementById('tt-image-grid'); if(!grid||!currentVideoData?.images)return; const items=grid.querySelectorAll('.image-grid-item'); if(selectedImages.size===currentVideoData.images.length){selectedImages.clear();items.forEach(i=>i.classList.remove('selected'));} else {currentVideoData.images.forEach((_,i)=>selectedImages.add(i));items.forEach(i=>i.classList.add('selected'));} }
+    async function downloadTTSelected(){ if(!currentVideoData?.images||selectedImages.size===0){showToast('Şəkil seçin!','error');return;} for(let idx of selectedImages){ await downloadFile(currentVideoData.images[idx],`tiktok_${idx+1}.jpg`); await new Promise(r=>setTimeout(r,600)); } showToast('✅ Şəkillər yükləndi','success'); }
+
+    // ---------- Instagram ----------
+    async function fetchInstagram(){
+      const url = document.getElementById('ig-url')?.value.trim();
+      if(!url){showToast('Link daxil edin!','error');return;}
+      const resDiv = document.getElementById('ig-results');
+      resDiv.innerHTML = '<div class="loading-container"><div class="loader"></div><p>Instagram analiz edilir...</p></div>';
+      try{
+        const resp = await fetch(`${API_BASE}/instagram?url=${encodeURIComponent(url)}`);
+        const data = await resp.json();
+        if(data.error) throw new Error(data.error);
+        currentVideoData=data; selectedImages.clear(); renderInstagramResults(data);
+      }catch(err){ resDiv.innerHTML=`<p style="color:#ff6b6b">${err.message}</p>`; showToast(err.message,'error'); }
+    }
+    function renderInstagramResults(data){
+      const resDiv = document.getElementById('ig-results');
+      let html = `<div class="preview-card">`;
+      if(data.thumbnail) html += `<img class="preview-thumb" src="${data.thumbnail}">`;
+      html += `<div class="preview-info"><h3>${data.title||'Instagram Media'}</h3>${data.type?`<span style="color:var(--accent2)">${data.type==='reel'?'Reels':'Post'}</span>`:''}</div>`;
+      if(data.images && data.images.length>1){
+        html += `<p style="font-weight:700;color:var(--accent2)"><i class="fa-solid fa-images"></i> Şəkillər (${data.images.length})</p><div class="image-grid" id="ig-image-grid">`;
+        data.images.forEach((img,idx)=>{ html += `<div class="image-grid-item" data-index="${idx}" onclick="toggleIGImage(${idx},this)"><img src="${img}"><span class="check-mark"><i class="fa-solid fa-check"></i></span></div>`; });
+        html += `</div><button class="btn btn-download btn-sm" onclick="downloadIGSelected()">Seçilmiş şəkilləri yüklə</button><button class="btn btn-outline btn-sm" style="margin-left:8px" onclick="selectAllIG()">Hamısını seç</button>`;
+      } else if(data.images && data.images.length===1){
+        html += `<button class="btn btn-download btn-sm" onclick="downloadFile('${data.images[0]}','instagram.jpg')">Şəkil Yüklə</button>`;
+      }
+      if(data.videoUrl) html += `<div style="margin-top:14px;padding-top:14px;border-top:1px solid var(--border)"><p style="font-weight:700"><i class="fa-solid fa-video"></i> Video:</p><button class="btn btn-download btn-sm" onclick="downloadFile('${data.videoUrl}','instagram.mp4')">Yüklə</button></div>`;
+      html += `</div>`; resDiv.innerHTML = html;
+    }
+    function toggleIGImage(idx,el){ if(selectedImages.has(idx)){selectedImages.delete(idx);el.classList.remove('selected');} else {selectedImages.add(idx);el.classList.add('selected');} }
+    function selectAllIG(){ const grid=document.getElementById('ig-image-grid'); if(!grid||!currentVideoData?.images)return; const items=grid.querySelectorAll('.image-grid-item'); if(selectedImages.size===currentVideoData.images.length){selectedImages.clear();items.forEach(i=>i.classList.remove('selected'));} else {currentVideoData.images.forEach((_,i)=>selectedImages.add(i));items.forEach(i=>i.classList.add('selected'));} }
+    async function downloadIGSelected(){ if(!currentVideoData?.images||selectedImages.size===0){showToast('Şəkil seçin!','error');return;} for(let idx of selectedImages){ await downloadFile(currentVideoData.images[idx],`instagram_${idx+1}.jpg`); await new Promise(r=>setTimeout(r,500)); } showToast('✅ Yükləndi','success'); }
+
+    // ---------- Pinterest & Facebook (oxşar) ----------
+    async function fetchPinterest(){
+      const url = document.getElementById('pin-url')?.value.trim();
+      if(!url){showToast('Link daxil edin!','error');return;}
+      const resDiv = document.getElementById('pin-results');
+      resDiv.innerHTML = '<div class="loading-container"><div class="loader"></div><p>Pinterest analiz edilir...</p></div>';
+      try{
+        const resp = await fetch(`${API_BASE}/pinterest?url=${encodeURIComponent(url)}`);
+        const data = await resp.json();
+        if(data.error) throw new Error(data.error);
+        currentVideoData=data; renderPinterestResults(data);
+      }catch(err){ resDiv.innerHTML=`<p style="color:#ff6b6b">${err.message}</p>`; }
+    }
+    function renderPinterestResults(data){
+      const resDiv = document.getElementById('pin-results');
+      let html = `<div class="preview-card">`;
+      if(data.thumbnail) html += `<img class="preview-thumb" src="${data.thumbnail}">`;
+      html += `<div class="preview-info"><h3>${data.title||'Pinterest'}</h3></div>`;
+      if(data.images) data.images.forEach((img,i)=> html += `<button class="btn btn-download btn-sm" style="margin:4px" onclick="downloadFile('${img}','pinterest_${i+1}.jpg')">Şəkil ${i+1}</button>`);
+      if(data.videoUrl) html += `<div style="margin-top:10px"><button class="btn btn-download btn-sm" onclick="downloadFile('${data.videoUrl}','pinterest.mp4')">Video Yüklə</button></div>`;
+      html += `</div>`; resDiv.innerHTML = html;
+    }
+    async function fetchFacebook(){
+      const url = document.getElementById('fb-url')?.value.trim();
+      if(!url){showToast('Link daxil edin!','error');return;}
+      const resDiv = document.getElementById('fb-results');
+      resDiv.innerHTML = '<div class="loading-container"><div class="loader"></div><p>Facebook analiz edilir...</p></div>';
+      try{
+        const resp = await fetch(`${API_BASE}/facebook?url=${encodeURIComponent(url)}`);
+        const data = await resp.json();
+        if(data.error) throw new Error(data.error);
+        currentVideoData=data; renderFacebookResults(data);
+      }catch(err){ resDiv.innerHTML=`<p style="color:#ff6b6b">${err.message}</p>`; }
+    }
+    function renderFacebookResults(data){
+      const resDiv = document.getElementById('fb-results');
+      let html = `<div class="preview-card">`;
+      if(data.thumbnail) html += `<img class="preview-thumb" src="${data.thumbnail}">`;
+      html += `<div class="preview-info"><h3>${data.title||'Facebook'}</h3></div>`;
+      if(data.images) data.images.forEach((img,i)=> html += `<button class="btn btn-download btn-sm" style="margin:4px" onclick="downloadFile('${img}','facebook_${i+1}.jpg')">Şəkil ${i+1}</button>`);
+      if(data.videoUrl) html += `<div style="margin-top:10px"><button class="btn btn-download btn-sm" onclick="downloadFile('${data.videoUrl}','facebook.mp4')">Video Yüklə</button></div>`;
+      html += `</div>`; resDiv.innerHTML = html;
+    }
+
+    // İlk yükləmə
+    renderSection('youtube');
+  </script>
+</body>
+</html>
